@@ -1,13 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<script src="/socket.io/socket.io.js"></script>
     <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
     <script type="text/babel" >
         "use strict";
     
+		let socket;
+		let totalClicks;	// Holds the total clicks of every user
+		let myClicks = 0;	// Holds the users personal clicks
+		let myClicksElem;	// Personal score element
+
+		const generateClick = () => {
+			// Adds 1 to a counter
+			myClicks++;
+			myClicksElem.innerText = myClicks;
+			
+			socket.emit("updateClicks", 1);
+		}
+		
+		const update = (data) => {
+			totalClicks.innerText = data;
+		}
+
+		const init = () => {
+			// Get elements from page
+			totalClicks = document.querySelector("#totalClicks");
+			totalClicks.innerText = 0;
+			myClicksElem = document.querySelector("#myClicks");
+			let clickButton = document.querySelector("#click");
+			click.addEventListener('click', generateClick);
+			
+			
+			socket = io.connect();
+			
+			socket.on('updated', update);
+		}
+		
+		window.onload = init;
     </script>
 </head>
 <body>
-
+	<h2>Total Clicks: <span id="totalClicks"></span></h2>
+	<h2>My Clicks: <span id="myClicks"</span></h2>
+	<button id="click">Click</button>
 </body>
 </html>
